@@ -10,4 +10,5 @@ def load_data(path):
 
 def create_yoy_growth(df):
     df["Yoy_growth"] = (df["Total_Revenue"].pct_change()) * 100
+    df["Yoy_growth"]=df["Yoy_growth"].fillna(0)
     return df

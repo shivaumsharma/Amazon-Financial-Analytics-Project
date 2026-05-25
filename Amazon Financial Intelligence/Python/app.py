@@ -42,7 +42,7 @@ col3.metric("5-Year Operating Income",f"${operating_income:.2f}B")
 st.subheader("Financial Dataset")
 st.dataframe(df)
 
-st.subheader("Financial Dataset with Filter")
+st.subheader("Filtered Financial Dataset")
 st.dataframe(filtered_df)
 
 st.subheader("Revenue Trend Analysis")

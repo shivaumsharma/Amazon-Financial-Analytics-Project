@@ -1,210 +1,194 @@
-# Amazon Financial Performance Analytics Dashboard (2020–2024)
+# Amazon Financial Intelligence Platform
 
-## Project Overview
-
-This project is an end-to-end Business Intelligence and Financial Analytics dashboard built using **SQL, Python, Excel, and Power BI** to analyze Amazon’s financial performance from 2020 to 2024.
-
-The dashboard focuses on:
-
-- Revenue growth trends
-- Profitability analysis
-- Business segment contribution
-- Forecasted revenue trends
-- Executive-level KPI reporting
-
-The goal of the project was to simulate a real-world business analytics workflow by combining data cleaning, SQL-based analysis, Python visualization, and Power BI dashboarding into a single analytics project.
+An interactive financial analytics and forecasting platform built using Python, SQL, Streamlit, and Power BI to analyze Amazon’s financial performance from 2020–2024. The platform combines KPI monitoring, predictive analytics, anomaly detection, and executive business insights into a modular and deployable analytics system.
 
 ---
 
-# Objectives
+# Features
 
-- Analyze Amazon’s historical financial performance
-- Track growth in revenue and operating metrics
-- Compare profitability trends across years
-- Understand contribution from key business segments
-- Build an executive-style interactive dashboard
-- Generate future revenue forecasts using Power BI analytics
-
----
-
-# Tools & Technologies Used
-
-| Tool                        | Purpose                                |
-| --------------------------- | -------------------------------------- |
-| SQL                         | Data querying and KPI analysis         |
-| Python (Pandas, Matplotlib) | Data cleaning and exploratory analysis |
-| Excel                       | Initial dataset preparation            |
-| Power BI                    | Dashboard creation and visualization   |
-| GitHub                      | Project hosting and documentation      |
+* Interactive Streamlit dashboard
+* Revenue and profitability KPI tracking
+* Executive business insight generation
+* Revenue forecasting using Linear Regression
+* Interactive Plotly visualizations
+* Dynamic year-based filtering
+* Operating margin analysis
+* Cloud revenue contribution analysis
+* Modular analytics architecture
+* Anomaly detection engine
+* SQL-driven financial preprocessing
+* Power BI reporting integration
 
 ---
 
-# Dataset Information
+# Dashboard Capabilities
 
-The dataset contains Amazon financial metrics from **2020–2024**, including:
+## KPI Monitoring
 
-- Total Revenue
-- Net Income
-- Operating Income
-- AWS Revenue
-- Advertising Revenue
-- International Revenue
-- Capital Expenditure
-- Cash Flow Operations
+Track:
 
----
+* Total Revenue
+* Net Income
+* Operating Income
+* Operating Margin
+* Year-over-Year Growth
 
-# Dashboard Features
+## Predictive Analytics
 
-## KPI Cards
+Forecast future revenue trends using machine learning models and visualize future business performance interactively.
 
-Executive summary cards displaying:
+## Executive Insights
 
-- 5-Year Cumulative Revenue
-- 5-Year Net Income
-- 5-Year Operating Income
+Automatically generated business insights summarizing:
 
----
+* revenue trends
+* cloud business growth
+* profitability changes
+* operational performance
 
-## Revenue Trend & Forecast Analysis
+## Interactive Filtering
 
-- Historical revenue growth visualization
-- Revenue forecasting for 2025–2026
-- Confidence interval forecasting using Power BI Analytics
+Users can dynamically filter dashboard visualizations by year using Streamlit sidebar controls.
 
 ---
 
-## Profitability Trend Analysis
+# Tech Stack
 
-Comparison of:
-
-- Operating Income
-- Net Income
-
-Highlights Amazon’s profitability decline during 2022 and subsequent recovery.
-
----
-
-## Business Segment Revenue Analysis
-
-Segment-wise comparison of:
-
-- AWS Revenue
-- Advertising Revenue
-- International Revenue
-
-Provides insight into Amazon’s diversification strategy.
+| Category         | Technologies        |
+| ---------------- | ------------------- |
+| Programming      | Python              |
+| Data Processing  | Pandas, NumPy       |
+| Visualization    | Plotly, Matplotlib  |
+| Dashboarding     | Streamlit, Power BI |
+| Machine Learning | Scikit-learn        |
+| Database         | SQL                 |
+| Version Control  | Git, GitHub         |
 
 ---
 
-# Key Business Insights
+# Project Structure
 
-- Amazon demonstrated strong year-over-year revenue growth from 2020–2024.
-- Profitability declined sharply in 2022 before recovering in later years.
-- AWS remained a major revenue contributor throughout the analysis period.
-- Advertising revenue showed stable and scalable growth.
-- Forecasting analysis suggests continued revenue expansion through 2026.
-
----
-
-# Project Workflow
-
-## 1. Data Preparation
-
-- Cleaned and structured financial data using Excel and Python.
-
-## 2. SQL Analysis
-
-Performed analytical queries including:
-
-- Year-over-Year Growth
-- Revenue Trends
-- Profitability Analysis
-- Segment Contribution Analysis
-
-## 3. Python Analysis
-
-Used Python libraries such as:
-
-- Pandas
-- Matplotlib
-
-for:
-
-- Data preprocessing
-- Visualization
-- Exploratory analysis
-
-## 4. Power BI Dashboard Development
-
-Built an interactive dashboard including:
-
-- KPI cards
-- Line charts
-- Forecasting visuals
-- Segment comparison charts
-- Executive insights section
+```bash
+Amazon Financial Intelligence/
+│
+├── data/
+│   └── Amazon_raw_data.xlsx
+│
+├── Python/
+│   ├── app.py
+│   ├── preprocessing.py
+│   ├── forecasting.py
+│   ├── kpi_engine.py
+│   ├── anomaly_detection.py
+│   ├── visualization.py
+│   └── requirements.txt
+│
+├── Screenshots/
+│
+├── README.md
+└── .gitignore
+```
 
 ---
 
-# Forecasting Note
+# Key Engineering Highlights
 
-The projected values for 2025–2026 are forecasted estimates generated using Power BI forecasting analytics and should not be interpreted as actual financial results.
+* Modular architecture with separated analytics layers
+* Reusable preprocessing and forecasting pipelines
+* Interactive business intelligence dashboard
+* Production-style project organization
+* Dynamic forecasting and KPI systems
+* Scalable financial analytics design
+
+---
+
+# Forecasting Model
+
+The project currently uses:
+
+* Linear Regression forecasting for revenue prediction
+
+Future planned upgrades:
+
+* ARIMA forecasting
+* Prophet integration
+* XGBoost forecasting
+* Multi-company benchmarking
+
+---
+
+# Installation
+
+Clone the repository:
+
+```bash
+git clone <your-repository-link>
+```
+
+Navigate into the project:
+
+```bash
+cd "Amazon Financial Intelligence"
+```
+
+Install dependencies:
+
+```bash
+pip install -r Python/requirements.txt
+```
+
+Run the Streamlit app:
+
+```bash
+python -m streamlit run Python/app.py
+```
 
 ---
 
 # Dashboard Preview
 
-(Add your dashboard screenshot here)
+Add dashboard screenshots here from the `Screenshots/` folder.
 
-Example:
+Recommended screenshots:
 
-```md
-![Dashboard Preview](visuals/amazon_dashboard.png)
-```
-
----
-
-# Folder Structure
-
-```text
-Amazon-Financial-Analytics-Project/
-│
-├── data/
-│   └── amazon_raw_data.xlsx
-│
-├── sql/
-│   └── amazon_analysis_queries.sql
-│
-├── python/
-│   └── analysis_script.py
-│
-├── powerbi/
-│   └── Amazon_BI_Work.pbix
-│
-├── visuals/
-│   └── amazon_dashboard.png
-│
-├── report/
-│   └── dashboard_export.pdf
-│
-└── README.md
-```
+* KPI dashboard
+* Revenue trend analysis
+* Forecasting visualization
+* Executive insights section
 
 ---
 
-# Future Improvements
+# Deployment
 
-- Add real-time API-based financial updates
-- Include valuation metrics (P/E, EBITDA, FCF)
-- Build interactive drill-through reports
-- Add scenario and sensitivity analysis
-- Deploy dashboard to Power BI Service
+The application is designed for deployment using:
+
+* Streamlit Community Cloud
+
+Deployment-ready architecture includes:
+
+* modular structure
+* dependency management
+* reusable pipelines
+* interactive dashboarding
+
+---
+
+# Future Enhancements
+
+* Multi-company financial benchmarking
+* Advanced forecasting models
+* Real-time API integration
+* AI-generated business summaries
+* Financial anomaly alert system
+* Comparative industry analytics
 
 ---
 
 # Author
 
-**Shivaum Shekhar Sharma**
+Shivaum Shekhar Sharma
+
 Computer Science Engineering (Data Science)
-Manipal Institute of Technology, Bangalore
+Manipal Institute of Technology, Bengaluru
+
+---

@@ -21,6 +21,9 @@ st.sidebar.info(
 st.sidebar.header("Dashboard Filters")
 selected_years=st.sidebar.multiselect("Select Years",options=df["Year"].unique(),default=df["Year"].unique())
 filtered_df=df[df["Year"].isin(selected_years)]
+if filtered_df.empty:
+    st.warning("Please select at least one year.")
+    st.stop()
 
 
 
@@ -66,8 +69,9 @@ forecast_df,future_years,predictions,model=(forecast_revenue(df))
 
 st.subheader("Executive Insights")
 revenue_growth=((filtered_df["Total_Revenue"].iloc[-1]-filtered_df["Total_Revenue"].iloc[0])/filtered_df["Total_Revenue"].iloc[0])*100
-cloud_growth=((filtered_df["AWS_Revenue"].iloc[-1]-filtered_df["AWS_Revenue"].iloc[0])/filtered_df["Total_Revenue"].iloc[0])*100
+cloud_growth=((filtered_df["AWS_Revenue"].iloc[-1]-filtered_df["AWS_Revenue"].iloc[0])/filtered_df["AWS_Revenue"].iloc[0])*100
 margin_change=((filtered_df["Operating_Margin"].iloc[-1]-filtered_df["Operating_Margin"].iloc[0])/filtered_df["Operating_Margin"].iloc[0])
+margin_change=margin_change*100
 
 st.success(f"Revenue grew by {revenue_growth:.2f}% over the selected period.")
 st.success(f"Cloud Revenue grew by {cloud_growth:.2f}% over the selected period.")

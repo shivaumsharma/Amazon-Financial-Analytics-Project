@@ -1,15 +1,17 @@
-def detect_anomalies(df):
+def detect_anomalies(df, column="Net_Income", threshold=1.5):
+    df = df.copy()
 
-    mean = df["Net_Income"].mean()
+    mean = df[column].mean()
+    std = df[column].std()
 
-    std = df["Net_Income"].std()
+    df["z_score"] = (df[column] - mean) / std
+    df["is_anomaly"] = df["z_score"].abs() > threshold
 
-    df["z_score"] = (
-        df["Net_Income"] - mean
-    ) / std
+    return df
 
-    anomalies = df[
-        abs(df["z_score"]) > 1.5
-    ]
 
-    return anomalies
+def detect_anomalies_multi(df, columns=("Net_Income", "Operating_Margin"), threshold=1.5):
+    return {
+        column: detect_anomalies(df, column=column, threshold=threshold)
+        for column in columns
+    }

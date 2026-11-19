@@ -1,4 +1,9 @@
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+# Static chart exports from the batch pipeline (main.py); regenerated on each run, not committed
+OUT_DIR = Path("outputs/charts")
+OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
 def revenue_trend(df):
@@ -8,7 +13,7 @@ def revenue_trend(df):
   plt.xlabel("Year")
   plt.ylabel("Revenue($bn)")
   plt.grid(True)
-  plt.savefig("Screenshots/dashboard/revenue_trend.png")
+  plt.savefig(OUT_DIR / "revenue_trend.png")
   plt.close()
 
 
@@ -19,7 +24,7 @@ def net_income_trend(df):
   plt.title("Amazon Net Income Trend")
   plt.xlabel("Year")
   plt.ylabel("Net_Income($bn)")
-  plt.savefig("Screenshots/dashboard/Net_income.png")
+  plt.savefig(OUT_DIR / "Net_income.png")
   plt.close()
 
 def aws_vs_revenue(df):
@@ -31,7 +36,7 @@ def aws_vs_revenue(df):
   plt.ylabel("Revenue")
   plt.legend()
   plt.grid(True)
-  plt.savefig("Screenshots/dashboard/AWSvsRevenue.png")
+  plt.savefig(OUT_DIR / "AWSvsRevenue.png")
   plt.close()
 
 def operating_margin_chart(df):
@@ -43,7 +48,7 @@ def operating_margin_chart(df):
   plt.grid(True)
   plt.title("Operating Margin Percentages")
   plt.ylabel("Operating Margin")
-  plt.savefig("Screenshots/dashboard/Operating_margin.png")
+  plt.savefig(OUT_DIR / "Operating_margin.png")
   plt.close()
 
 def yoy_growth_chart(df):
@@ -54,7 +59,7 @@ def yoy_growth_chart(df):
   plt.ylabel("YoY Growth")
   plt.grid(True)
   plt.legend()
-  plt.savefig("Screenshots/dashboard/YOY_growth.png")
+  plt.savefig(OUT_DIR / "YOY_growth.png")
   plt.close()
 
 def forecast_chart(df,future_years,predictions):
@@ -66,5 +71,5 @@ def forecast_chart(df,future_years,predictions):
   plt.ylabel("Revenue Generated")
   plt.legend()
   plt.grid(True)
-  plt.savefig("Screenshots/dashboard/Curr_vs_Fut_rev.png")
+  plt.savefig(OUT_DIR / "Curr_vs_Fut_rev.png")
   plt.close()

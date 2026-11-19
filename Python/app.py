@@ -42,37 +42,47 @@ if filtered_df.empty:
 # ---------------------------------------------------------------------------
 # KPI Section
 # ---------------------------------------------------------------------------
-total_revenue = filtered_df["Total_Revenue"].sum()
-net_income = filtered_df["Net_Income"].sum()
-operating_income = filtered_df["Operating_Income"].sum()
+latest = filtered_df.iloc[-1]
+latest_year = int(latest["Year"])
+prior = df[df["Year"] == latest_year - 1]
+
+if not prior.empty:
+    prior = prior.iloc[0]
+    revenue_delta = f"{(latest['Total_Revenue'] / prior['Total_Revenue'] - 1) * 100:+.1f}% YoY"
+    net_income_delta = f"{latest['Net_Income'] - prior['Net_Income']:+.2f}B YoY"
+    margin_delta = f"{latest['Operating_Margin'] - prior['Operating_Margin']:+.1f} pts YoY"
+else:
+    revenue_delta = net_income_delta = margin_delta = None
 
 col1, col2, col3 = st.columns(3)
-col1.metric("Revenue (selected years)", f"${total_revenue:.2f}B")
-col2.metric("Net Income (selected years)", f"${net_income:.2f}B")
-col3.metric("Operating Income (selected years)", f"${operating_income:.2f}B")
+col1.metric(f"{latest_year} Revenue", f"${latest['Total_Revenue']:.2f}B", revenue_delta)
+col2.metric(f"{latest_year} Net Income", f"${latest['Net_Income']:.2f}B", net_income_delta)
+col3.metric(f"{latest_year} Operating Margin", f"{latest['Operating_Margin']:.1f}%", margin_delta)
+st.caption("KPIs show the latest selected year, compared with the year before it.")
 
-st.subheader("Financial Dataset")
-st.dataframe(df)
-
-st.subheader("Filtered Financial Dataset")
-st.dataframe(filtered_df)
+with st.expander("View financial dataset (USD billions)"):
+    st.dataframe(filtered_df.round(2), hide_index=True, use_container_width=True)
 
 
 # ---------------------------------------------------------------------------
 # Trend charts
 # ---------------------------------------------------------------------------
 st.subheader("Revenue Trend Analysis")
-fig = px.line(filtered_df, x="Year", y="Total_Revenue", markers=True, title="Amazon Revenue Growth")
+fig = px.line(filtered_df, x="Year", y="Total_Revenue", markers=True, title="Amazon Revenue Growth",
+              labels={"Total_Revenue": "Revenue ($B)"})
 fig.update_xaxes(dtick=1, type="category")
 st.plotly_chart(fig, use_container_width=True)
 
 st.subheader("AWS Contribution Analysis")
-fig = px.line(filtered_df, x="Year", y=["Total_Revenue", "AWS_Revenue"], markers=True, title="Amazon AWS Contribution")
+fig = px.line(filtered_df, x="Year", y=["Total_Revenue", "AWS_Revenue"], markers=True, title="Amazon AWS Contribution",
+              labels={"value": "Revenue ($B)", "variable": "Series"})
+fig.for_each_trace(lambda t: t.update(name={"Total_Revenue": "Total Revenue", "AWS_Revenue": "AWS Revenue"}[t.name]))
 fig.update_xaxes(dtick=1, type="category")
 st.plotly_chart(fig, use_container_width=True)
 
 st.subheader("Operating Margin Trend")
-fig = px.line(filtered_df, x="Year", y="Operating_Margin", markers=True, title="Amazon Margins")
+fig = px.line(filtered_df, x="Year", y="Operating_Margin", markers=True, title="Amazon Operating Margin",
+              labels={"Operating_Margin": "Operating Margin (%)"})
 fig.update_xaxes(dtick=1, type="category")
 st.plotly_chart(fig, use_container_width=True)
 
@@ -84,7 +94,8 @@ st.plotly_chart(fig, use_container_width=True)
 st.header("Anomaly Detection")
 st.caption(
     "Z-score based outlier detection (|z| > 1.5) across key financial metrics, computed on the "
-    "full 2020–2024 dataset."
+    "full 2020–2024 dataset. With only 5 years, no single year's |z| can exceed about 1.79, so a "
+    "flag means 'the most unusual year in this window', not formal statistical significance."
 )
 
 anomaly_results = detect_anomalies_multi(df, columns=("Net_Income", "Operating_Margin"))
@@ -99,6 +110,7 @@ for col, (column, result_df) in zip(anomaly_cols, anomaly_results.items()):
             color="is_anomaly",
             color_discrete_map={True: "#EF553B", False: "#636EFA"},
             title=f"{column.replace('_', ' ')} — Anomaly Scan",
+            labels={column: column.replace("_", " "), "is_anomaly": "Anomaly"},
         )
         fig.add_trace(
             go.Scatter(
@@ -137,7 +149,12 @@ st.caption(
     "models by construction — treat the forecast as directional, not a precise prediction."
 )
 
-st.dataframe(forecast_df)
+st.dataframe(
+    forecast_df[["Year", "Linear_Forecast", "Polynomial_Forecast"]]
+    .rename(columns={"Linear_Forecast": "Linear Forecast ($B)", "Polynomial_Forecast": "Polynomial Forecast ($B)"})
+    .round(2),
+    hide_index=True,
+)
 
 fig_forecast = go.Figure()
 fig_forecast.add_trace(
@@ -191,11 +208,14 @@ indexed_df = build_indexed_growth(df, indian_df)
 growth_summary = company_growth_summary(indian_df)
 
 amazon_latest = df.sort_values("Year").iloc[-1]
+# Compare CAGRs over the same window: Amazon is restricted to the Indian companies' aligned years
+aligned_start = indian_df["Amazon_Aligned_Year"].min()
+amazon_aligned_cagr = revenue_cagr(df[df["Year"] >= aligned_start])
 amazon_summary_row = pd.DataFrame(
     [
         {
             "Company": "Amazon",
-            "Revenue_CAGR_Pct": revenue_cagr(df),
+            "Revenue_CAGR_Pct": amazon_aligned_cagr,
             "Latest_Revenue_USD_B": amazon_latest["Total_Revenue"],
             "Latest_Net_Income_USD_B": amazon_latest["Net_Income"],
             "Latest_Net_Margin_Pct": (amazon_latest["Net_Income"] / amazon_latest["Total_Revenue"]) * 100,
@@ -211,23 +231,39 @@ fig_indexed = px.line(
     color="Company",
     markers=True,
     title="Revenue Growth Indexed to 100 (first aligned year = 100)",
+    labels={"Amazon_Aligned_Year": "Aligned Year", "Index": "Revenue Index"},
 )
 fig_indexed.update_xaxes(type="category")
 st.plotly_chart(fig_indexed, use_container_width=True)
 
 col_a, col_b = st.columns(2)
 with col_a:
-    fig_cagr = px.bar(combined_summary, x="Company", y="Revenue_CAGR_Pct", title="Revenue CAGR % (aligned window)")
+    fig_cagr = px.bar(combined_summary, x="Company", y="Revenue_CAGR_Pct", title=f"Revenue CAGR % ({int(aligned_start)}–{int(amazon_latest['Year'])} aligned window)",
+                      labels={"Revenue_CAGR_Pct": "CAGR (%)"})
     st.plotly_chart(fig_cagr, use_container_width=True)
 with col_b:
-    fig_margin = px.bar(combined_summary, x="Company", y="Latest_Net_Margin_Pct", title="Latest Net Margin %")
+    fig_margin = px.bar(combined_summary, x="Company", y="Latest_Net_Margin_Pct", title="Latest Net Margin %",
+                        labels={"Latest_Net_Margin_Pct": "Net Margin (%)"})
     st.plotly_chart(fig_margin, use_container_width=True)
 
 st.subheader("Company Comparison Summary")
-st.dataframe(combined_summary)
+st.dataframe(
+    combined_summary.rename(
+        columns={
+            "Revenue_CAGR_Pct": "Revenue CAGR (%)",
+            "Latest_Revenue_USD_B": "Latest Revenue ($B)",
+            "Latest_Net_Income_USD_B": "Latest Net Income ($B)",
+            "Latest_Net_Margin_Pct": "Latest Net Margin (%)",
+        }
+    ).round(2),
+    hide_index=True,
+    use_container_width=True,
+)
 
 st.subheader("Year-by-Year Comparison Detail")
-st.dataframe(comparison_df)
+st.dataframe(
+    comparison_df.round({"Net_Margin_Pct": 2, "Amazon_Scale_Multiple": 1}), hide_index=True, use_container_width=True
+)
 
 indian_latest_total = indian_df[indian_df["Amazon_Aligned_Year"] == indian_df["Amazon_Aligned_Year"].max()][
     "Revenue_USD_B"
@@ -240,6 +276,6 @@ st.success(
     f"roughly {scale_multiple:,.0f}x the combined revenue of Zomato, Swiggy, and Nykaa "
     f"(\\${indian_latest_total:.2f}B) in the aligned year — yet {fastest_grower['Company']} grew "
     f"revenue at a {fastest_grower['Revenue_CAGR_Pct']:.1f}% CAGR versus Amazon's "
-    f"{revenue_cagr(df):.1f}%. This contrasts a mature, profitable global platform against "
+    f"{amazon_aligned_cagr:.1f}% over the same {int(aligned_start)}–{int(amazon_latest['Year'])} window. This contrasts a mature, profitable global platform against "
     f"India's hyper-growth, still cash-burning digital commerce market."
 )
